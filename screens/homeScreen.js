@@ -1,26 +1,37 @@
-import React, { useLayoutEffect, cleanup } from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableNativeFeedback } from 'react-native'
-import { auth } from '../firebase';
 import { useNavigation } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { auth } from '../firebase';
+import { SafeAreaView } from 'react-native-web';
+import axios from 'axios';
+
 
 const homeScreen = () => {
 
     const navigation = useNavigation();
 
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => {
-                <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
-                    <MaterialIcons name="logout" size={24} color="black" />
-                </TouchableNativeFeedback>
-            }
-        })
-        return () => {
-            cleanup
-        };
-    }, [])
+    const apiKey = 'api_key=dd94e9b7e8d050a7115321fa72aaf943'
+    const language = 'language=pt-BR';
+
+
+    const getTrending = async () => {
+        const dataTrending = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?${apiKey}&${language}`);
+
+        console.log("AQUI COMEÇA TRENDING", dataTrending);
+    }
+
+    const getPopular = async () => {
+        const dataPopular = await axios.get(`https://api.themoviedb.org/3/movie/popular?${apiKey}&${language}`);
+
+        console.log("AQUI COMEÇA POPULAR", dataPopular);
+    }
+
+    useEffect(() => {
+        getTrending();
+        getPopular();
+    }, []);
+
 
     const handleSingOut = () => {
         auth.signOut()
@@ -31,16 +42,17 @@ const homeScreen = () => {
             })
     }
 
+
     return (
-        <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', marginTop: 30, width: 200 }}>
-            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
+            <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', marginTop: 30, width: 300 }}>
+                <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
 
-                <View style={styles.button}>
-                    <Text style={styles.buttonText}>LogOut</Text>
-                </View>
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>LogOut</Text>
+                    </View>
 
-            </TouchableNativeFeedback>
-        </View>
+                </TouchableNativeFeedback>
+            </View>
     )
 }
 
