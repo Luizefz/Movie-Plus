@@ -46,7 +46,7 @@ const passResetScreen = () => {
             <SafeAreaView>
                 <ScrollView>
 
-                    <View style={styles.HelpMeWrapper}>
+                    <View style={styles.topWrapper}>
 
                         <View style={styles.inputContainer}>
 
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    HelpMeWrapper: {
+    topWrapper: {
         paddingTop: 80,
         paddingHorizontal: 20,
     },

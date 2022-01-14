@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F54038"
-      }
+      },
+      "package": "com.uuyzs.MoviePlus"
     },
     "web": {
       "favicon": "./assets/favicon.png"

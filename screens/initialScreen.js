@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, ImageBackground, TouchableNativeFeedback } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, ImageBackground, TouchableNativeFeedback, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+import { auth } from '../firebase';
 
 const initialScreen = () => {
 
     const navigation = useNavigation();
+
+    const [loading, setLoading] = useState(true);
 
     const goSingUp = () => {
         console.log("Initial.Screen | btn-cadastrar, navigating to Register Screen");
@@ -17,16 +20,30 @@ const initialScreen = () => {
         navigation.navigate("Login");
     }
 
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.replace('Home');
+            } else {
+                // User is signed out
+                setLoading(false)
+                navigation.canGoBack()
+            }
+            setLoading(false)
+        });
+
+        return unsubscribe
+
+    }, [])
+
     return (
 
 
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView>
             <ScrollView>
+
                 <View style={styles.container}>
-
-
-
-                    <View style={styles.throwWrapper}>
+                    <View style={styles.topWrapper}>
                         <Text style={[styles.welcomeText, { fontFamily: 'Inter_400Regular' }]}>Seja Bem-vindo ao</Text>
                         <Text style={styles.welcomeText}>Moovie Plus.</Text>
 
@@ -34,17 +51,31 @@ const initialScreen = () => {
 
                         <Text style={styles.descriptionText}>Tudo sobre os filmes que acabaram de sair no cinema em um clique.</Text>
 
+                        {!loading && (
+                            <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038' }}>
+                                <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={goSingIn}>
 
-                        <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038' }}>
-                            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={goSingIn}>
+                                    <View style={styles.button}>
+                                        <Text style={styles.buttonText}>Login</Text>
+                                    </View>
 
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Login</Text>
-                                </View>
+                                </TouchableNativeFeedback>
+                            </View>
+                        )}
+                        {loading &&
+                            <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038' }}>
+                                <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')}>
 
-                            </TouchableNativeFeedback>
-                        </View>
+                                    <View style={styles.button}>
+                                        <View style={styles.activeIndicator}>
+                                            <ActivityIndicator size="large" color="#f5f5f5" />
+                                        </View>
+                                    </View>
 
+                                </TouchableNativeFeedback>
+                            </View>
+
+                        }
                         <View style={{ borderRadius: 40, overflow: "hidden", marginTop: 10, borderColor: '#1B2727', borderWidth: 3 }}>
                             <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#F54038')} onPress={goSingUp}>
 
@@ -56,6 +87,7 @@ const initialScreen = () => {
                         </View>
 
                     </View>
+
 
 
                     <StatusBar style="light" />
@@ -82,7 +114,7 @@ const styles = StyleSheet.create({
         height: 380,
         resizeMode: 'cover',
     },
-    throwWrapper: {
+    topWrapper: {
         paddingHorizontal: 30,
         paddingTop: '15%',
     },
@@ -118,4 +150,8 @@ const styles = StyleSheet.create({
         marginBottom: '3%',
         marginTop: '3%',
     },
+    activeIndicator: {
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center',
+        height: 60,
+    }
 })

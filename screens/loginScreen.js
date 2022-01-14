@@ -24,22 +24,6 @@ const loginScreen = () => {
         }
     }
 
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(auth, (user) => {
-            if (user) {
-                navigation.replace('Home');
-            } else {
-                // User is signed out
-                navigation.canGoBack() &&
-                    navigation.popToTop();
-            }
-        });
-
-        return unsubscribe
-    })
-
-
     const SingIn = () => {
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
@@ -70,7 +54,7 @@ const loginScreen = () => {
             <SafeAreaView>
                 <ScrollView>
 
-                    <View style={styles.HelpMeWrapper}>
+                    <View style={styles.topWrapper}>
 
                         <View style={styles.inputContainer}>
 
@@ -123,7 +107,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    HelpMeWrapper: {
+    topWrapper: {
         paddingTop: 10,
         paddingHorizontal: 20,
     },
