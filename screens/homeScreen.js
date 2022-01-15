@@ -1,10 +1,11 @@
 import React, { useEffect, cleanup, useRef, useState } from 'react'
-import { StyleSheet, Text, View, Image, TouchableNativeFeedback, SafeAreaView, ScrollView, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableNativeFeedback, SafeAreaView, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
 
 import axios from 'axios';
 import Carousel from 'react-native-snap-carousel';
+import CarouselTopics from './components/CarouselTopics';
 
 
 const homeScreen = () => {
@@ -16,49 +17,46 @@ const homeScreen = () => {
     const language = 'language=pt-BR';
 
     const refCarousel = useRef(null);
-    const [listaTrending, setListaTrending] = useState([]);
+    const [listaTrending, setListaTrending] = useState();
+    const [listaPopular, setListaPopular] = useState();
+    const [listaTopRated, setTopRated] = useState();
 
-    const [listaPopular, setListaPopular] = useState([
-        {
-            title: "O justiceiro",
-            img: "https://br.web.img3.acsta.net/r_1280_720/pictures/17/10/19/14/40/3658022.jpg"
-        },
-        {
-            title: "Lucca",
-            img: "https://br.web.img3.acsta.net/pictures/21/05/07/10/59/3500748.jpg"
-        },
-        {
-            title: "Encanto",
-            img: "https://sobresagas.com.br/wp-content/uploads/2021/09/poster1.jpeg"
-        }
-    ]);
-
-    const getTrending = async () => {
-        const { data } = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?${apiKey}&${language}`);
-
-        setListaTrending(data.results);
+    async function getTrending() {
+        const request = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?${apiKey}&${language}`);
+        setListaTrending(request.data.results);
+        //console.log(request.data.results);
+        return request;
     }
 
-    /*const getPopular = async () => {
-        const dataPopular = await axios.get(`https://api.themoviedb.org/3/movie/popular?${apiKey}&${language}`);
+    async function getPopular() {
+        const request = await axios.get(`https://api.themoviedb.org/3/movie/popular?${apiKey}&${language}`);
+        setListaPopular(request.data.results);
+        //console.log(request.data.results);
+        return request;
+    }
 
-        console.log(dataPopular);
-        setListaPopular(dataPopular.data.results);
-    }*/
+    async function getTopRated() {
+        const request = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?${apiKey}&${language}`);
+        setTopRated(request.data.results);
+        //console.log(request.data.results);
+        return request;
+    }
+
 
 
     const _renderItem = ({ item, index }) => {
         return (
-            <View>
-                <Image style={styles.carouselImage} source={{ uri: item.img }} />
+            <TouchableOpacity /*onClick={navigation.navigate("Overview")}*/>
+                <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }} />
                 <Text style={styles.carouselText}>{item.title}</Text>
-            </View>
+            </TouchableOpacity>
         )
     };
 
     useEffect(() => {
         getTrending();
-        //getPopular();
+        getPopular();
+        getTopRated()
         navigation.canGoBack()
 
     }, [cleanup]);
@@ -78,39 +76,37 @@ const homeScreen = () => {
             <ScrollView>
 
                 <View style={styles.container}>
-                    {/* <View style={styles.topWrapper}>
-                        <Text style={[styles.welcomeText, { fontFamily: 'Inter_400Regular' }]}>Seja Bem-vindo ao</Text>
-                        <Text style={styles.welcomeText}>Moovie Plus.</Text>*/}
+                    <View style={styles.topWrapper}>
+                        <View style={styles.slideView}>
+                            <Carousel
+                                style={styles.carousel}
+                                ref={refCarousel}
+                                data={listaTrending}
+                                renderItem={_renderItem}
+                                sliderWidth={Dimensions.get('window').width}
+                                itemWidth={380}
+                                inactiveSlideScale={0.9}
+                                inactiveSlideOpacity={0.9}
+                                autoplay={true}
+                                loop={true}
+                            />
+                        </View>
 
+                        <CarouselTopics title="Filmes Populares" lista={listaPopular} />
+                        <CarouselTopics title="Melhores Avaliações" lista={listaTopRated} />
+                        <CarouselTopics title="Filmes Populares" lista={listaPopular} />
 
+                        <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', marginTop: 30, width: 300, alignSelf: 'center' }}>
+                            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
 
+                                <View style={styles.button}>
+                                    <Text style={styles.buttonText}>LogOut</Text>
+                                </View>
 
-                    <View style={styles.slideView}>
-                        <Carousel
-                            style={styles.carousel}
-                            ref={refCarousel}
-                            data={listaPopular}
-                            renderItem={_renderItem}
-                            sliderWidth={Dimensions.get('window').width}
-                            itemWidth={380}
-                            inactiveSlideOpacity={0.5}
-                            loop={true}
-                            loopClonesPerSide={2}
-                            autoplay={true}
-                            autoplayDelay={10}
-                        />
-                    </View>
-                    <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', marginTop: 30, width: 300, alignSelf: 'center', marginTop: '80%' }}>
-                        <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
-
-                            <View style={styles.button}>
-                                <Text style={styles.buttonText}>LogOut</Text>
-                            </View>
-
-                        </TouchableNativeFeedback>
+                            </TouchableNativeFeedback>
+                        </View>
                     </View>
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     )
@@ -133,7 +129,7 @@ const styles = StyleSheet.create({
     },
     slideView: {
         width: '100%',
-        height: 350,
+        height: 220,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -150,16 +146,21 @@ const styles = StyleSheet.create({
         fontSize: 23,
     },
     carouselImage: {
-        alignSelf: 'center',
         width: '100%',
-        height: 300,
+        height: '100%',
         borderRadius: 12,
+        opacity: 0.6,
     },
     carouselText: {
-        fontFamily: 'Inter_500Medium',
-        color: '#ffff',
-        fontSize: 24,
-        padding: 15,
-        textAlign: 'center'
+        fontFamily: 'Inter_700Bold',
+        color: '#f5f5f5',
+        fontSize: 50,
+        justifyContent: 'center',
+        width: '100%',
+        padding: 10,
+        bottom: 0,
+        position: 'absolute',
+        borderRadius: 12,
+        fontSize: 20,
     },
 })
