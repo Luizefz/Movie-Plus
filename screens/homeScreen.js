@@ -2,15 +2,18 @@ import React, { useEffect, cleanup, useRef, useState, useLayoutEffect } from 're
 import { StyleSheet, Text, View, Image, TouchableNativeFeedback, SafeAreaView, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
+import * as firebase from 'firebase'
 import axios from 'axios';
 import Carousel from 'react-native-snap-carousel';
 import CarouselTopics from './components/CarouselTopics';
 
 
-const homeScreen = () => {
+const homeScreen = ({ route: { params } }) => {
 
 
     const navigation = useNavigation();
+
+    const user = firebase.auth().currentUser;
 
     const apiKey = 'api_key=dd94e9b7e8d050a7115321fa72aaf943'
     const language = 'language=pt-BR';
@@ -64,15 +67,16 @@ const homeScreen = () => {
     useEffect(() => {
         getTrending();
         getPopular();
-        getTopRated()
-        getFictionMovies()
-        getAnimationMovies()
-        navigation.canGoBack()
+        getTopRated();
+        getFictionMovies();
+        getAnimationMovies();
+        navigation.canGoBack();
 
     }, [cleanup]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            title: `Olá, ${user.displayName}!`,
             headerRight: () => (
                 <TouchableOpacity styles={styles.signOutButton} onPress={() => handleSingOut()}>
                     <Image style={styles.signOutButton} source={require('../assets/logout.png')} />

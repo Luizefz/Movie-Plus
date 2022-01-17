@@ -30,8 +30,8 @@ const loginScreen = () => {
                 // Signed in 
                 const user = userCredential.user;
                 console.log("Login.Screen | Login-success, navigating to Home Screen");
-                console.log("Initial.Screen | ", user.displayName);
-                navigation.replace('Home');
+                console.log("Login.Screen | ", user.displayName);
+                navigation.replace('Home', {idUser: user.uid, nameUser: user.displayName});
                 setLoading(false)
             })
             .catch((error) => {

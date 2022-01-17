@@ -23,7 +23,7 @@ const initialScreen = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                navigation.replace('Home');
+                navigation.replace('Home', {idUser: user.uid, nameUser: user.displayName});
             } else {
                 // User is signed out
                 setLoading(false)
@@ -35,6 +35,22 @@ const initialScreen = () => {
         return unsubscribe
 
     }, [])
+
+    /*useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.replace('Home', {idUser: user.uid, nameUser: user.displayName});
+            } else {
+                // User is signed out
+                setLoading(false)
+                navigation.canGoBack()
+            }
+            setLoading(false)
+        });
+
+        return unsubscribe
+
+    }, [])*/
 
     return (
 

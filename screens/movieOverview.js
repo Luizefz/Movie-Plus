@@ -1,10 +1,49 @@
-import React from 'react'
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image } from 'react-native'
+import React, { useLayoutEffect, useState } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TouchableNativeFeedback } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
+import * as firebase from 'firebase'
+import { db } from '../firebase';
 
 
 const movieOverview = ({ route: { params } }) => {
 
+    const navigation = useNavigation();
+
+    const user = firebase.auth().currentUser;
+
     const { filme } = params;
+
+    const saveMovieFavorite = () => {
+        db.collection(`${user.uid}`).doc(`${filme.id}`).set({
+            id: `${filme.id}`,
+            name: `${filme.title}`,
+        })
+            .then((docRef) => {
+                console.log("Document written with ID: ", docRef);
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+    }
+
+    const deleteMovieFavorite = () => {
+        db.collection(`${user.uid}`).doc(`${filme.id}`).delete().then(() => {
+            console.log("Document successfully deleted!");
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+
+                <TouchableOpacity styles={styles.favoriteButton} onPress={() => saveMovieFavorite()}>
+                    <Image style={styles.favoriteButton} source={require('../assets/favorite.png')} />
+                </TouchableOpacity>
+            )
+        });
+    }, []);
 
     return (
         <SafeAreaView>
@@ -20,6 +59,14 @@ const movieOverview = ({ route: { params } }) => {
                         <Text style={[styles.textOverview, { paddingBottom: 0 }]}>Sobre:</Text>
                         <Text style={styles.textOverview}>{filme.overview}</Text>
                     </View>
+
+                    <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', width: '80%', alignSelf:'center' }}>
+                        <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={deleteMovieFavorite}>
+                            <View style={styles.button}>
+                                <Text style={styles.buttonText}>Remv/Favoritos</Text>
+                            </View>
+                        </TouchableNativeFeedback>
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -34,6 +81,11 @@ const styles = StyleSheet.create({
     },
     topWrapper: {
         height: 300
+    },
+    favoriteButton: {
+        width: 25,
+        height: 25,
+        resizeMode: 'cover'
     },
     headerImage: {
         width: '100%',
@@ -66,5 +118,17 @@ const styles = StyleSheet.create({
         color: '#f5f5f5',
         fontSize: 20,
         padding: 25,
+    },
+    button: {
+        flexDirection: 'row',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonText: {
+        fontFamily: 'Inter_500Medium',
+        textAlign: 'center',
+        color: '#f5f5f5',
+        fontSize: 23,
     },
 })
