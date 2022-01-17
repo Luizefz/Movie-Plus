@@ -28,7 +28,7 @@ export default function App() {
   }
 
   const Dark = {
-    dark: false,
+    dark: true,
     colors: {
       primary: '#F54038',
       background: '#000',
@@ -48,7 +48,7 @@ export default function App() {
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Cadastro' }} name="Register" component={registerScreen} />
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Redefinir Senha' }} name="PassReset" component={passResetScreen} />
         <Stack.Screen options={{ headerBackVisible: false }} name="Home" component={homeScreen} />
-        <Stack.Screen options={{ headerTitleStyle: 'Inter_400Regular', title: 'Movie Overview' }} name="Overview" component={movieOverview} />
+        <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Overview' }} name="Overview" component={movieOverview} />
         <Stack.Screen options={{}} name="Favorites" component={favoritesScreen} />
       </Stack.Navigator>
 

@@ -1,8 +1,7 @@
-import React, { useEffect, cleanup, useRef, useState } from 'react'
+import React, { useEffect, cleanup, useRef, useState, useLayoutEffect } from 'react'
 import { StyleSheet, Text, View, Image, TouchableNativeFeedback, SafeAreaView, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
-
 import axios from 'axios';
 import Carousel from 'react-native-snap-carousel';
 import CarouselTopics from './components/CarouselTopics';
@@ -20,46 +19,8 @@ const homeScreen = () => {
     const [listaTrending, setListaTrending] = useState();
     const [listaPopular, setListaPopular] = useState();
     const [listaTopRated, setTopRated] = useState();
-
-    async function getTrending() {
-        const request = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?${apiKey}&${language}`);
-        setListaTrending(request.data.results);
-        //console.log(request.data.results);
-        return request;
-    }
-
-    async function getPopular() {
-        const request = await axios.get(`https://api.themoviedb.org/3/movie/popular?${apiKey}&${language}`);
-        setListaPopular(request.data.results);
-        //console.log(request.data.results);
-        return request;
-    }
-
-    async function getTopRated() {
-        const request = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?${apiKey}&${language}`);
-        setTopRated(request.data.results);
-        //console.log(request.data.results);
-        return request;
-    }
-
-
-
-    const _renderItem = ({ item, index }) => {
-        return (
-            <TouchableOpacity /*onClick={navigation.navigate("Overview")}*/>
-                <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }} />
-                <Text style={styles.carouselText}>{item.title}</Text>
-            </TouchableOpacity>
-        )
-    };
-
-    useEffect(() => {
-        getTrending();
-        getPopular();
-        getTopRated()
-        navigation.canGoBack()
-
-    }, [cleanup]);
+    const [listaFictionMovies, setFictionMovies] = useState();
+    const [listaAnimationMovies, setAAnimationMovies] = useState();
 
     const handleSingOut = () => {
         auth.signOut()
@@ -69,6 +30,65 @@ const homeScreen = () => {
 
             })
     }
+
+    async function getTrending() {
+        const request = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?${apiKey}&${language}`);
+        setListaTrending(request.data.results);
+        return request;
+    }
+
+    async function getPopular() {
+        const request = await axios.get(`https://api.themoviedb.org/3/movie/popular?${apiKey}&${language}`);
+        setListaPopular(request.data.results);
+        return request;
+    }
+
+    async function getTopRated() {
+        const request = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?${apiKey}&${language}&region=BR`);
+        setTopRated(request.data.results);
+        return request;
+    }
+
+    async function getFictionMovies() {
+        const request = await axios.get(`https://api.themoviedb.org/3/discover/movie?${apiKey}&${language}&with_genres=878`);
+        setFictionMovies(request.data.results);
+        return request;
+    }
+
+    async function getAnimationMovies() {
+        const request = await axios.get(`https://api.themoviedb.org/3/discover/movie?${apiKey}&${language}&with_genres=16`);
+        setAAnimationMovies(request.data.results);
+        return request;
+    }
+
+    useEffect(() => {
+        getTrending();
+        getPopular();
+        getTopRated()
+        getFictionMovies()
+        getAnimationMovies()
+        navigation.canGoBack()
+
+    }, [cleanup]);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity styles={styles.signOutButton} onPress={() => handleSingOut()}>
+                    <Image style={styles.signOutButton} source={require('../assets/logout.png')} />
+                </TouchableOpacity>
+            )
+        });
+    }, []);
+
+    const _renderItem = ({ item, index }) => {
+        return (
+            <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>
+                <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }} />
+                <Text style={styles.carouselText}>{item.title}</Text>
+            </TouchableOpacity>
+        )
+    };
 
 
     return (
@@ -94,17 +114,9 @@ const homeScreen = () => {
 
                         <CarouselTopics title="Filmes Populares" lista={listaPopular} />
                         <CarouselTopics title="Melhores Avaliações" lista={listaTopRated} />
-                        <CarouselTopics title="Filmes Populares" lista={listaPopular} />
+                        <CarouselTopics title="Animações" lista={listaAnimationMovies} />
+                        <CarouselTopics title="Ficção Científica" lista={listaFictionMovies} />
 
-                        <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038', marginTop: 30, width: 300, alignSelf: 'center' }}>
-                            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={handleSingOut}>
-
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>LogOut</Text>
-                                </View>
-
-                            </TouchableNativeFeedback>
-                        </View>
                     </View>
                 </View>
             </ScrollView>
@@ -132,6 +144,11 @@ const styles = StyleSheet.create({
         height: 220,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    signOutButton: {
+        width: 30,
+        height: 30,
+        resizeMode: 'cover'
     },
     button: {
         flexDirection: 'row',

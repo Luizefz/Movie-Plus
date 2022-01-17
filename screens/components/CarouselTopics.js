@@ -13,7 +13,7 @@ const carouselTopics = ({ title, lista }) => {
     const _renderItem = ({ item, index }) => {
         return (
             <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity /*onClick={navigation.navigate("Overview")}*/>
+                <TouchableOpacity onPress={() => navigation.navigate('Overview', {filme: item})}>
                     <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} />
                 </TouchableOpacity>
             </View>
