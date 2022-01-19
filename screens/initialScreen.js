@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, ImageBackground, TouchableNativeFeedback, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, Dimensions, TouchableNativeFeedback, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { auth } from '../firebase';
@@ -23,7 +23,7 @@ const initialScreen = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                navigation.replace('Home', {idUser: user.uid, nameUser: user.displayName});
+                navigation.replace('Home', { idUser: user.uid, nameUser: user.displayName });
             } else {
                 // User is signed out
                 setLoading(false)
@@ -62,10 +62,12 @@ const initialScreen = () => {
                     <View style={styles.topWrapper}>
                         <Text style={[styles.welcomeText, { fontFamily: 'Inter_400Regular' }]}>Seja Bem-vindo ao</Text>
                         <Text style={styles.welcomeText}>Moovie Plus.</Text>
+                    </View>
 
-                        <Image source={require('../assets/peopleCinema.png')} style={styles.imageCenter}></Image>
+                    <Image source={require('../assets/DriveIn.png')} style={styles.imageCenter}></Image>
 
-                        <Text style={styles.descriptionText}>Tudo sobre os filmes que acabaram de sair no cinema em um clique.</Text>
+                    <View style={styles.topWrapper}>
+                        <Text style={styles.descriptionText}>Tudo sobre os maiores sucessos das telonas em um só lugar.</Text>
 
                         {!loading && (
                             <View style={{ borderRadius: 40, overflow: "hidden", backgroundColor: '#F54038' }}>
@@ -96,7 +98,7 @@ const initialScreen = () => {
                             <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#F54038')} onPress={goSingUp}>
 
                                 <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Cadastre-se!</Text>
+                                    <Text style={styles.buttonText}>Cadastrar</Text>
                                 </View>
 
                             </TouchableNativeFeedback>
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     imageCenter: {
-        width: '100%',
+        width: Dimensions.get('window').width,
         height: 380,
         resizeMode: 'cover',
     },
@@ -141,9 +143,10 @@ const styles = StyleSheet.create({
     },
     descriptionText: {
         fontFamily: 'Inter_500Medium',
+        letterSpacing: -0.3,
         textAlign: 'left',
         color: '#ffff',
-        fontSize: 20,
+        fontSize: 18,
         marginBottom: 40,
     },
     button: {

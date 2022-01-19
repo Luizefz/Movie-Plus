@@ -1,5 +1,5 @@
 import React, { useEffect, cleanup, useRef, useState, useLayoutEffect } from 'react'
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, Dimensions, TouchableOpacity, TouchableNativeFeedback } from 'react-native'
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { auth, db } from '../firebase';

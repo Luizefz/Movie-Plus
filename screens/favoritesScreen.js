@@ -1,56 +1,82 @@
-import React, { useEffect, cleanup, useRef, useState, useLayoutEffect } from 'react'
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity, FlatList } from 'react-native'
+import React, { useEffect, cleanup, useRef, useState } from 'react'
+import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
-import { auth, db } from '../firebase';
+import Toast from 'react-native-simple-toast';
+import { db } from '../firebase';
 import * as firebase from 'firebase'
 
 const favoritesScreen = () => {
 
     const navigation = useNavigation();
-
     const user = firebase.auth().currentUser;
-
     const refCarousel = useRef(null);
 
     const [listaMovieFavorite, setMovieFavorite] = useState();
+    const [loading, setLoading] = useState(true);
 
-    const getMovieFavorite = () => {
-        db.collection(`${user.uid}`)
-            .get()
-            .then(querySnapshot => {
-                console.log('Total users: ', querySnapshot.size);
+    const getMovieFavorite = async () => {
+        const snapshot = await
+            db.collection(`${user.uid}`)
+                .get()
+                .then(querySnapshot => {
+                    console.log('Total users: ', querySnapshot.size);
 
-                querySnapshot.forEach(documentSnapshot => {
-                    setMovieFavorite(documentSnapshot.data())
+                    const docList = []
+
+                    if (querySnapshot.size == 0) {
+                        setLoading(false)
+                        navigation.replace('Home')
+                        Toast.show('Você não favoritou nenhum filme.\nExperimente clicar no ícone do coração!', Toast.LONG);
+
+                    }
+
+                    querySnapshot.forEach(documentSnapshot => {
+                        docList.push(documentSnapshot.data())
+
+                        setMovieFavorite(docList)
+                        setLoading(false)
+                    });
                 });
-            });
     }
 
-    console.log(listaMovieFavorite)
-
-
-
-
-    const _renderItem = ({ item }) => {
+    const _renderItem = ({ item, index }) => {
         return (
-            <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }} />
+            <View style={{ width: Dimensions.get('window').width, justifyContent: 'center', alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>
+                    <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster}` }} />
+                </TouchableOpacity>
+            </View>
         )
     };
 
     useEffect(() => {
-        getMovieFavorite();
+        const refresh = navigation.addListener('focus', () => {
+            getMovieFavorite();
+        });
+        return refresh;
     }, [cleanup]);
 
     return (
-        <SafeAreaView>
-                <FlatList 
-                style={styles.carousel}
-                data={listaMovieFavorite}
-                renderItem={_renderItem}
-                ref={refCarousel}
-                />
-        </SafeAreaView>
+        <View>
+            <View style={styles.slideView}>
+                {!loading && (
+                    <FlatList
+                        style={styles.carousel}
+                        ref={refCarousel}
+                        data={listaMovieFavorite}
+                        renderItem={_renderItem}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                    />
+                )}
+            </View>
+
+            {loading &&
+                <View style={styles.activeIndicator}>
+                    <ActivityIndicator size="large" color="#f5f5f5" />
+                </View>
+            }
+        </View>
     )
 }
 
@@ -60,7 +86,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    slideView: {
+        alignSelf: 'center',
+    },
     carouselImage: {
-        width: 500
+        width: 320,
+        height: 460,
+        borderRadius: 12,
+    },
+    carousel: {
+        paddingRight: 10,
+    },
+    activeIndicator: {
+        paddingTop: 400,
+        height: 60,
     }
 })

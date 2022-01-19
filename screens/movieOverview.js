@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity, TouchableNativeFeedback } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Toast from 'react-native-simple-toast';
 import * as firebase from 'firebase'
 import { db } from '../firebase';
@@ -9,9 +10,7 @@ import { db } from '../firebase';
 const movieOverview = ({ route: { params } }) => {
 
     const navigation = useNavigation();
-
     const user = firebase.auth().currentUser;
-
     const { filme } = params;
 
     const saveMovieFavorite = () => {
@@ -20,14 +19,15 @@ const movieOverview = ({ route: { params } }) => {
             title: `${filme.title}`,
             poster: `${filme.poster_path}`,
             backdrop_path: `${filme.backdrop_path}`,
-
+            vote_average: `${filme.vote_average}`,
+            overview: `${filme.overview}`,
         })
             .then((docRef) => {
                 Toast.show('Filme adicionado aos favoritos!');
                 console.log("Document written with ID: ", `${filme.id}`);
             })
             .catch((error) => {
-                Toast.show('Algo deu errado. ', error );
+                Toast.show('Algo deu errado. ', error);
                 console.error("Error adding document: ", error);
             });
     }
@@ -57,19 +57,23 @@ const movieOverview = ({ route: { params } }) => {
             <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.topWrapper}>
+
                         <Image style={styles.headerImage} blurRadius={3} source={{ uri: `https://image.tmdb.org/t/p/w500${filme.backdrop_path}` }} />
                         <View style={styles.sectionTitle}>
                             <Text style={styles.headerTitle}>{filme.title}</Text>
                         </View>
-                    
-                    <View style={styles.sectionRating}>
-                        <Image style={styles.starRatting} source={require('../assets/star.png')} />
-                        <Text style={ styles.movieRating}>{filme.vote_average}</Text>
-                    </View></View>
+
+                        <View style={styles.sectionRating}>
+                            <Image style={styles.starRatting} source={require('../assets/star.png')} />
+                            <Text style={styles.movieRating}>{filme.vote_average}</Text>
+                        </View>
+                    </View>
+
                     <View style={styles.sectionOverview}>
                         <Text style={styles.textOverview}>Sobre:</Text>
-                        <Text style={[styles.textOverview, {paddingBottom: 110}]}>{filme.overview}</Text>
+                        <Text style={[styles.textOverview, { paddingBottom: 110 }]}>{filme.overview}</Text>
                     </View>
+
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     topWrapper: {
-        
+
     },
     favoriteButton: {
         width: 28,
@@ -127,9 +131,6 @@ const styles = StyleSheet.create({
         color: '#f5f5f5',
         fontSize: 15,
         paddingLeft: 3
-    },  
-    sectionOverview: {
-      //marginTop: 200  
     },
     textOverview: {
         fontFamily: 'Inter_500Medium',

@@ -49,12 +49,12 @@ export default function App() {
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Redefinir Senha' }} name="PassReset" component={passResetScreen} />
         <Stack.Screen options={{ headerBackVisible: false, headerTransparent: true, headerShadowVisible: false }} name="Home" component={homeScreen} />
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: '', headerTransparent: true, headerShadowVisible: false }} name="Overview" component={movieOverview} />
-        <Stack.Screen options={{}} name="Favorites" component={favoritesScreen} />
+        <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Favoritos', headerTransparent: true, headerShadowVisible: false }} name="Favorites" component={favoritesScreen} />
       </Stack.Navigator>
 
     </NavigationContainer>
 
-    
+
   );
 }
 
