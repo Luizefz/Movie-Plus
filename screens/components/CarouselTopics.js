@@ -1,6 +1,5 @@
 import React, { useRef } from 'react'
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Image } from 'react-native'
-import Carousel from 'react-native-snap-carousel';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Image, FlatList } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -12,7 +11,7 @@ const carouselTopics = ({ title, lista }) => {
 
     const _renderItem = ({ item, index }) => {
         return (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', paddingRight: 8}}>
                 <TouchableOpacity onPress={() => navigation.navigate('Overview', {filme: item})}>
                     <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} />
                 </TouchableOpacity>
@@ -23,19 +22,15 @@ const carouselTopics = ({ title, lista }) => {
     return (
         <View>
             <Text style={styles.titleText}>{title}</Text>
-            <Carousel
+            <FlatList 
                 style={styles.carousel}
                 ref={refCarousel}
                 data={lista}
                 renderItem={_renderItem}
-                sliderWidth={Dimensions.get('window').width}
-                itemWidth={120}
-                activeSlideAlignment={'start'}
-                inactiveSlideScale={1}
-                inactiveSlideOpacity={1}
-                
+                horizontal
+                showsHorizontalScrollIndicator={false}
             />
-        </View>
+        </View> 
     )
 }
 
@@ -53,5 +48,8 @@ const styles = StyleSheet.create({
         width: 115,
         height: 160,
         borderRadius: 4,
+    },
+    carousel: {
+        paddingRight: 10
     },
 })

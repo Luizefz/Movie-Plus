@@ -1,14 +1,14 @@
 import React, { useEffect, cleanup, useRef, useState, useLayoutEffect } from 'react'
-import { StyleSheet, Text, View, Image, TouchableNativeFeedback, SafeAreaView, ScrollView, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, Dimensions, TouchableOpacity, TouchableNativeFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase';
+import { StatusBar } from 'expo-status-bar';
+import { auth, db } from '../firebase';
 import * as firebase from 'firebase'
 import axios from 'axios';
 import Carousel from 'react-native-snap-carousel';
 import CarouselTopics from './components/CarouselTopics';
 
-
-const homeScreen = ({ route: { params } }) => {
+const homeScreen = () => {
 
 
     const navigation = useNavigation();
@@ -22,7 +22,6 @@ const homeScreen = ({ route: { params } }) => {
     const [listaTrending, setListaTrending] = useState();
     const [listaPopular, setListaPopular] = useState();
     const [listaTopRated, setTopRated] = useState();
-    const [listaFictionMovies, setFictionMovies] = useState();
     const [listaAnimationMovies, setAAnimationMovies] = useState();
 
     const handleSingOut = () => {
@@ -52,12 +51,6 @@ const homeScreen = ({ route: { params } }) => {
         return request;
     }
 
-    async function getFictionMovies() {
-        const request = await axios.get(`https://api.themoviedb.org/3/discover/movie?${apiKey}&${language}&with_genres=878`);
-        setFictionMovies(request.data.results);
-        return request;
-    }
-
     async function getAnimationMovies() {
         const request = await axios.get(`https://api.themoviedb.org/3/discover/movie?${apiKey}&${language}&with_genres=16`);
         setAAnimationMovies(request.data.results);
@@ -68,7 +61,6 @@ const homeScreen = ({ route: { params } }) => {
         getTrending();
         getPopular();
         getTopRated();
-        getFictionMovies();
         getAnimationMovies();
         navigation.canGoBack();
 
@@ -78,9 +70,15 @@ const homeScreen = ({ route: { params } }) => {
         navigation.setOptions({
             title: `Olá, ${user.displayName}!`,
             headerRight: () => (
-                <TouchableOpacity styles={styles.signOutButton} onPress={() => handleSingOut()}>
-                    <Image style={styles.signOutButton} source={require('../assets/logout.png')} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row'}}>
+                    <TouchableOpacity styles={styles.favoriteButton} onPress={() => navigation.navigate('Favorites')}>
+                        <Image style={styles.favoriteButton} source={require('../assets/favorite.png')} />
+                    </TouchableOpacity>
+                    <TouchableOpacity styles={styles.lodOutButton} onPress={() => handleSingOut()}>
+                        <Image style={styles.logOutButton} source={require('../assets/logout.png')} />
+                    </TouchableOpacity>
+
+                </View>
             )
         });
     }, []);
@@ -88,7 +86,7 @@ const homeScreen = ({ route: { params } }) => {
     const _renderItem = ({ item, index }) => {
         return (
             <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>
-                <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.backdrop_path}` }} />
+                <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} />
                 <Text style={styles.carouselText}>{item.title}</Text>
             </TouchableOpacity>
         )
@@ -108,21 +106,22 @@ const homeScreen = ({ route: { params } }) => {
                                 data={listaTrending}
                                 renderItem={_renderItem}
                                 sliderWidth={Dimensions.get('window').width}
-                                itemWidth={380}
+                                itemWidth={Dimensions.get('window').width}
                                 inactiveSlideScale={0.9}
                                 inactiveSlideOpacity={0.9}
                                 autoplay={true}
                                 loop={true}
                             />
                         </View>
-
+                    </View>
+                    <View style={styles.bodyWrapper}>
                         <CarouselTopics title="Filmes Populares" lista={listaPopular} />
                         <CarouselTopics title="Melhores Avaliações" lista={listaTopRated} />
                         <CarouselTopics title="Animações" lista={listaAnimationMovies} />
-                        <CarouselTopics title="Ficção Científica" lista={listaFictionMovies} />
-
                     </View>
+
                 </View>
+                <StatusBar style="light" />
             </ScrollView>
         </SafeAreaView>
     )
@@ -135,24 +134,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     topWrapper: {
-        paddingTop: 10,
-        paddingHorizontal: 20,
+        //paddingTop: 10,
+
+    },
+    bodyWrapper: {
+        paddingLeft: 20,
     },
     welcomeText: {
         fontFamily: 'Inter_500Medium',
         color: '#ffff',
         fontSize: 24,
     },
-    slideView: {
-        width: '100%',
-        height: 220,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    signOutButton: {
+
+    logOutButton: {
         width: 30,
         height: 30,
         resizeMode: 'cover'
+    },
+    favoriteButton: {
+        width: 30,
+        height: 30,
+        marginRight: 20
     },
     button: {
         flexDirection: 'row',
@@ -166,22 +168,29 @@ const styles = StyleSheet.create({
         color: '#f5f5f5',
         fontSize: 23,
     },
+    slideView: {
+        width: '100%',
+        height: 600,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     carouselImage: {
         width: '100%',
         height: '100%',
-        borderRadius: 12,
+        resizeMode: 'cover',
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
         opacity: 0.6,
     },
     carouselText: {
         fontFamily: 'Inter_700Bold',
         color: '#f5f5f5',
-        fontSize: 50,
+        fontSize: 30,
+        alignSelf: 'center',
         justifyContent: 'center',
-        width: '100%',
-        padding: 10,
-        bottom: 0,
         position: 'absolute',
         borderRadius: 12,
-        fontSize: 20,
+        padding: 10,
+        bottom: 0,
     },
 })
