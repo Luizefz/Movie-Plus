@@ -96,7 +96,7 @@ const initialScreen = () => {
                             <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#F54038')} onPress={goSingUp}>
 
                                 <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Cadastrar</Text>
+                                    <Text style={styles.buttonText}>Cadastre-se!</Text>
                                 </View>
 
                             </TouchableNativeFeedback>
