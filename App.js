@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import initialScreen from './screens/initialScreen';
 import loginScreen from './screens/loginScreen';

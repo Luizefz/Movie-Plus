@@ -2,15 +2,18 @@ import React from 'react';
 import { useState } from 'react';
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableNativeFeedback, Alert, TextInput, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-simple-toast';
+import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { auth } from '../firebase';
 
-const registerScreen = ({ navigation }) => {
+const registerScreen = () => {
+
+    const navigation = useNavigation();
 
     const [loading, setLoading] = useState(false);
-    const [email, SetEmail] = useState('')
-    const [password, SetPassword] = useState('')
-    const [nome, SetNome] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [nome, setNome] = useState('')
 
     const handleSingUp = () => {
         setLoading(true)
@@ -23,13 +26,14 @@ const registerScreen = ({ navigation }) => {
                 }).then(() => {
                     Toast.show('Cadastro realizado com sucesso!');
                     console.log("Register.Screen | Cadastro-success, navigating to Initial Screen");
-                    console.log("Register.Screen | ", user.displayName);
+                    auth.signOut()
+                    navigation.replace('Initial');
                     // Profile updated!
                 }).catch((error) => {
                     // An error occurred
                     // ...
                 });
-                navigation.popToTop();
+
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -61,13 +65,13 @@ const registerScreen = ({ navigation }) => {
                         <View style={styles.inputContainer}>
 
                             <Text style={styles.text}>Nome</Text>
-                            <TextInput placeholder="Eduardo" selectionColor={'grey'} style={styles.input} value={nome} onChangeText={text => SetNome(text)}></TextInput>
+                            <TextInput placeholder="Eduardo" selectionColor={'grey'} style={styles.input} value={nome} onChangeText={text => setNome(text)}></TextInput>
 
                             <Text style={styles.text}>Email</Text>
-                            <TextInput placeholder="exemplo@email.com" selectionColor={'grey'} style={styles.input} value={email} onChangeText={text => SetEmail(text)}></TextInput>
+                            <TextInput placeholder="exemplo@email.com" selectionColor={'grey'} style={styles.input} value={email} onChangeText={text => setEmail(text)}></TextInput>
 
                             <Text style={styles.text}>Senha</Text>
-                            <TextInput placeholder="Digite sua senha" selectionColor={'grey'} style={styles.input} value={password} onChangeText={text => SetPassword(text)} secureTextEntry></TextInput>
+                            <TextInput placeholder="Digite sua senha" selectionColor={'grey'} style={styles.input} value={password} onChangeText={text => setPassword(text)} secureTextEntry></TextInput>
 
                         </View>
 

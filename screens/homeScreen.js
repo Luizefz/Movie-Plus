@@ -10,9 +10,7 @@ import CarouselTopics from './components/CarouselTopics';
 
 const homeScreen = () => {
 
-
     const navigation = useNavigation();
-
     const user = firebase.auth().currentUser;
 
     const apiKey = 'api_key=dd94e9b7e8d050a7115321fa72aaf943'
@@ -23,6 +21,8 @@ const homeScreen = () => {
     const [listaPopular, setListaPopular] = useState();
     const [listaTopRated, setTopRated] = useState();
     const [listaAnimationMovies, setAAnimationMovies] = useState();
+
+    navigation.canGoBack();
 
     const handleSingOut = () => {
         auth.signOut()
@@ -62,19 +62,17 @@ const homeScreen = () => {
         getPopular();
         getTopRated();
         getAnimationMovies();
-        navigation.canGoBack();
-
     }, [cleanup]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
             title: `Olá, ${user.displayName}!`,
             headerRight: () => (
-                <View style={{ flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity styles={styles.favoriteButton} onPress={() => navigation.navigate('Favorites')}>
                         <Image style={styles.favoriteButton} source={require('../assets/favorite.png')} />
                     </TouchableOpacity>
-                    <TouchableOpacity styles={styles.lodOutButton} onPress={() => handleSingOut()}>
+                    <TouchableOpacity onPress={() => handleSingOut()}>
                         <Image style={styles.logOutButton} source={require('../assets/logout.png')} />
                     </TouchableOpacity>
 
@@ -83,7 +81,7 @@ const homeScreen = () => {
         });
     }, []);
 
-    const _renderItem = ({ item, index }) => {
+    const _renderItem = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>
                 <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }} />
@@ -132,10 +130,6 @@ export default homeScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    topWrapper: {
-        //paddingTop: 10,
-
     },
     bodyWrapper: {
         paddingLeft: 20,

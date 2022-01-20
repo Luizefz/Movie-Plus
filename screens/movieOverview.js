@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react'
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import Toast from 'react-native-simple-toast';
 import * as firebase from 'firebase'
 import { db } from '../firebase';
@@ -34,7 +34,7 @@ const movieOverview = ({ route: { params } }) => {
 
     const deleteMovieFavorite = () => {
         db.collection(`${user.uid}`).doc(`${filme.id}`).delete().then(() => {
-            Toast.show('Filme retirado dos favoritos!');
+            Toast.show('Filme removido dos favoritos!');
             console.log("Document successfully deleted!");
         }).catch((error) => {
             Toast.show('Algo deu errado. ', error, Toast.LONG);
@@ -56,7 +56,7 @@ const movieOverview = ({ route: { params } }) => {
         <SafeAreaView>
             <ScrollView>
                 <View style={styles.container}>
-                    <View style={styles.topWrapper}>
+                    <View>
 
                         <Image style={styles.headerImage} blurRadius={3} source={{ uri: `https://image.tmdb.org/t/p/w500${filme.backdrop_path}` }} />
                         <View style={styles.sectionTitle}>
@@ -75,6 +75,7 @@ const movieOverview = ({ route: { params } }) => {
                     </View>
 
                 </View>
+                <StatusBar style="light" />
             </ScrollView>
         </SafeAreaView>
     )
@@ -85,9 +86,6 @@ export default movieOverview
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    topWrapper: {
-
     },
     favoriteButton: {
         width: 28,

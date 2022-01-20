@@ -19,14 +19,14 @@ const favoritesScreen = () => {
             db.collection(`${user.uid}`)
                 .get()
                 .then(querySnapshot => {
-                    console.log('Total users: ', querySnapshot.size);
+                    console.log('Total favoritos: ', querySnapshot.size);
 
                     const docList = []
 
                     if (querySnapshot.size == 0) {
                         setLoading(false)
-                        navigation.replace('Home')
-                        Toast.show('Você não favoritou nenhum filme.\nExperimente clicar no ícone do coração!', Toast.LONG);
+                        navigation.navigate('Home')
+                        Toast.show('Nenhum filme favoritado.', Toast.LONG);
 
                     }
 
@@ -39,7 +39,7 @@ const favoritesScreen = () => {
                 });
     }
 
-    const _renderItem = ({ item, index }) => {
+    const _renderItem = ({ item }) => {
         return (
             <View style={{ width: Dimensions.get('window').width, justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>

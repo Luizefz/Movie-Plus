@@ -12,7 +12,7 @@ const initialScreen = () => {
 
     const goSingUp = () => {
         console.log("Initial.Screen | btn-cadastrar, navigating to Register Screen");
-        navigation.navigate("Register");
+        navigation.replace("Register");
     }
 
     const goSingIn = () => {
@@ -21,9 +21,10 @@ const initialScreen = () => {
     }
 
     useEffect(() => {
+
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                navigation.replace('Home', { idUser: user.uid, nameUser: user.displayName });
+                navigation.replace('Home');
             } else {
                 // User is signed out
                 setLoading(false)
@@ -36,28 +37,10 @@ const initialScreen = () => {
 
     }, [])
 
-    /*useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                navigation.replace('Home', {idUser: user.uid, nameUser: user.displayName});
-            } else {
-                // User is signed out
-                setLoading(false)
-                navigation.canGoBack()
-            }
-            setLoading(false)
-        });
-
-        return unsubscribe
-
-    }, [])*/
-
     return (
-
 
         <SafeAreaView>
             <ScrollView>
-
                 <View style={styles.container}>
                     <View style={styles.topWrapper}>
                         <Text style={[styles.welcomeText, { fontFamily: 'Inter_400Regular' }]}>Seja Bem-vindo ao</Text>
@@ -95,7 +78,7 @@ const initialScreen = () => {
 
                         }
                         <View style={{ borderRadius: 40, overflow: "hidden", marginTop: 10, borderColor: '#1B2727', borderWidth: 3 }}>
-                            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#F54038')} onPress={goSingUp}>
+                            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#1B2727')} onPress={goSingUp}>
 
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Cadastrar</Text>
@@ -113,7 +96,6 @@ const initialScreen = () => {
             </ScrollView>
         </SafeAreaView>
 
-        //</ImageBackground>
     )
 }
 
@@ -170,7 +152,13 @@ const styles = StyleSheet.create({
         marginTop: '3%',
     },
     activeIndicator: {
-        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
         height: 60,
     }
 })
