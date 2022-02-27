@@ -2,6 +2,7 @@ import React, { useEffect, cleanup, useRef, useState } from 'react'
 import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
+import * as Animatable from 'react-native-animatable';
 import { db } from '../firebase';
 import * as firebase from 'firebase'
 
@@ -41,11 +42,11 @@ const favoritesScreen = () => {
 
     const _renderItem = ({ item }) => {
         return (
-            <View style={{ width: Dimensions.get('window').width, justifyContent: 'center', alignItems: 'center' }}>
+            <Animatable.View animation="fadeIn" style={{ width: Dimensions.get('window').width, justifyContent: 'center', alignItems: 'center' }}>
                 <TouchableOpacity onPress={() => navigation.navigate('Overview', { filme: item })}>
                     <Image style={styles.carouselImage} source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster}` }} />
                 </TouchableOpacity>
-            </View>
+            </Animatable.View>
         )
     };
 
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     carousel: {
-        paddingRight: 10,
+        //paddingRight: 10,
     },
     activeIndicator: {
         paddingTop: 400,

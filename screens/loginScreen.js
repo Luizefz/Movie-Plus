@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, KeyboardAvoidingView, TextInput, TouchableNativeFeedback, Alert, ActivityIndicator } from 'react-native'
 import Toast from 'react-native-simple-toast';
 import { StatusBar } from 'expo-status-bar';
@@ -13,6 +13,8 @@ const loginScreen = () => {
     const [loading, setLoading] = useState(false);
     const [email, SetEmail] = useState('')
     const [password, SetPassword] = useState('')
+    
+    const passRef = useRef();
 
     const verifica = () => {
         if ((email, password) !== '') {
@@ -59,10 +61,10 @@ const loginScreen = () => {
                         <View style={styles.inputContainer}>
 
                             <Text style={styles.text}>Email</Text>
-                            <TextInput placeholder="exemplo@email.com" selectionColor={'grey'} style={styles.input} value={email} onChangeText={text => SetEmail(text)}></TextInput>
+                            <TextInput placeholder="exemplo@email.com" selectionColor={'grey'} style={styles.input} value={email} onChangeText={text => SetEmail(text)} onSubmitEditing={() => {passRef.current.focus()}}></TextInput>
 
                             <Text style={styles.text}>Senha</Text>
-                            <TextInput placeholder="Digite sua senha" selectionColor={'grey'} style={styles.input} value={password} onChangeText={text => SetPassword(text)} secureTextEntry></TextInput>
+                            <TextInput placeholder="Digite sua senha" selectionColor={'grey'} style={styles.input} value={password} onChangeText={text => SetPassword(text)} onSubmitEditing={verifica} ref={passRef} secureTextEntry></TextInput>
 
                             <TouchableOpacity onPress={goPassReset} style={styles.esqueciButton}>
 

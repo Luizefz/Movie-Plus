@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import initialScreen from './screens/initialScreen';
 import loginScreen from './screens/loginScreen';
 import registerScreen from './screens/registerScreen';
@@ -13,7 +13,7 @@ import movieOverview from './screens/movieOverview';
 
 export default function App() {
 
-  const Stack = createNativeStackNavigator();
+  const Stack = createStackNavigator();
 
   const fonts = useFonts({
     Inter_400Regular,
@@ -42,7 +42,11 @@ export default function App() {
   return (
     <NavigationContainer theme={Dark}>
 
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          gestureEnabled: false,
+          ...TransitionPresets.DefaultTransition,
+        }}>
         <Stack.Screen options={{ headerShown: false }} name="Initial" component={initialScreen} />
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular' }} name="Login" component={loginScreen} />
         <Stack.Screen options={{ headerTitleAlign: 'center', headerTitleStyle: 'Inter_400Regular', title: 'Cadastro' }} name="Register" component={registerScreen} />

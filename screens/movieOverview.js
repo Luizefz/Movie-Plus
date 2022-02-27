@@ -88,8 +88,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     favoriteButton: {
-        width: 28,
-        height: 28,
+        width: 30,
+        height: 30,
+        marginRight: 11,
         top: 0
     },
     headerImage: {

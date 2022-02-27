@@ -67,12 +67,13 @@ const homeScreen = () => {
     useLayoutEffect(() => {
         navigation.setOptions({
             title: `Olá, ${user.displayName}!`,
+            headerLeft: ()=> null,
             headerRight: () => (
                 <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity styles={styles.favoriteButton} onPress={() => navigation.navigate('Favorites')}>
+                    <TouchableOpacity style={styles.favoriteButton} onPress={() => navigation.navigate('Favorites')}>
                         <Image style={styles.favoriteButton} source={require('../assets/favorite.png')} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleSingOut()}>
+                    <TouchableOpacity style={{marginRight: 11}} onPress={() => handleSingOut()}>
                         <Image style={styles.logOutButton} source={require('../assets/logout.png')} />
                     </TouchableOpacity>
 
